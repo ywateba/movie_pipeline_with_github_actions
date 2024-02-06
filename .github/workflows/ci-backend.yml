@@ -29,7 +29,7 @@ jobs:
 
     - name: Lint with flake8
       run: |
-        pipenv run lint  backend/
+        cd backend && pipenv run lint
 
   test:
     runs-on: ubuntu-latest
@@ -44,11 +44,11 @@ jobs:
       run: python -m pip install pipenv
 
     - name: Install dependencies
-      run: pipenv install --dev
+      run: cd backend && pipenv install --dev
 
     - name: Run tests
       run: |
-        pipenv run test backend/
+        cd backend && pipenv run test
 
   build:
     runs-on: ubuntu-latest
@@ -61,5 +61,6 @@ jobs:
 
     - name: Build Docker image
       run: |
+          REPOSITORY=456619976774.dkr.ecr.us-east-1.amazonaws.com
           COMMIT_HASH=$(git log -1 --format=%H)
-          docker build -t app/backend:COMMIT_HASH ./backend
+          docker build -t $REPOSITORY/backend:$COMMIT_HASH ./backend
