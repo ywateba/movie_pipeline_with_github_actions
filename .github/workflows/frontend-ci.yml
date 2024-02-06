@@ -85,4 +85,4 @@ jobs:
           cd frontend
           TAG=$(git log -1 --format=%H)
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$TAG
