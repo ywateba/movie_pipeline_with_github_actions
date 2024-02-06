@@ -74,6 +74,7 @@ jobs:
         cd backend && pipenv run test
 
   build:
+    needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
