@@ -11,6 +11,11 @@ on:
       - 'frontend/**'
   workflow_dispatch:
 
+env:
+  ECR_REGISTRY: 456619976774.dkr.ecr.us-east-1.amazonaws.com
+  ECR_REPOSITORY: frontend
+  TAG: $GITHUB_SHA
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -25,7 +30,7 @@ jobs:
       - name: Install dependencies
         run:  cd frontend && npm ci
 
-      - name: Run eslint
+      - name: Linting
         run:  cd frontend && npm run lint
 
   test:
@@ -36,6 +41,16 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ' 18.x'
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
 
       - name: Install dependencies
@@ -54,8 +69,19 @@ jobs:
         with:
           node-version: ' 18.x'
 
-      - name: Build docker image
-        run: |
-          REPOSITORY=456619976774.dkr.ecr.us-east-1.amazonaws.com
-          COMMIT_HASH=$(git log -1 --format=%H)
-          docker build -t $REPOSITORY/frontend:$COMMIT_HASH ./frontend
+     - name: Get AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image to Amazon ECR
+      run: |
+        cd frontend
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$TAG .

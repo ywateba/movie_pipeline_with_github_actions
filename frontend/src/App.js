@@ -5,7 +5,10 @@ import './App.css';
 
 export default function App() {
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const movies = [
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const default_movies = [
     {
       title: 'Inception',
       director: 'Christopher Nolan',
@@ -24,6 +27,43 @@ export default function App() {
   const handleMovieClick = (movie) => {
     setSelectedMovie(movie);
   };
+
+
+
+  const getMovies = async () => {
+    try {
+      // Start loading
+      setLoading(true);
+      // Fetch movies from the API
+      const response = await fetch('http://localhost:5000');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setMovies(data); // Assuming the API returns an array of movies
+    } catch (error) {
+      // Catch any errors and set an error state
+      setError(error.message);
+      setMovies(default_movies)
+    } finally {
+      // End loading whether there was an error or not
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+
+    getMovies();
+  }, []);
+
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className="container">
