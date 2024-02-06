@@ -19,11 +19,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: ' 18.x'
 
 
       - name: Install dependencies
-        run:  cd frontend && npm install
+        run:  cd frontend && npm ci
 
       - name: Run eslint
         run:  cd frontend && npm run lint
@@ -35,11 +35,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: ' 18.x'
 
 
       - name: Install dependencies
-        run: cd frontend && npm install
+        run: cd frontend && npm ci
 
       - name: Run tests
         run: cd frontend && CI=true npm test
@@ -52,7 +52,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: ' 18.x'
 
       - name: Build docker image
         run: |
