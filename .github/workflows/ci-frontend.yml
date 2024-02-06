@@ -20,6 +20,9 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '14'
+      - name: Set node version
+        run : nvm use 14.7.0
+
       - name: Install dependencies
         run:  cd frontend && npm ci
 
@@ -34,6 +37,9 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '14'
+
+      - name: Set node version
+        run : nvm use 14.7.0
 
       - name: Install dependencies
         run: cd frontend && npm ci
