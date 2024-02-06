@@ -24,7 +24,7 @@ jobs:
         run:  cd frontend && npm ci
 
       - name: Run eslint
-        run:  cd frontend && npx run lint
+        run:  cd frontend && npm run lint
 
   test:
     runs-on: ubuntu-latest
