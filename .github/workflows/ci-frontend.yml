@@ -1,0 +1,58 @@
+name: Frontend CI Workflow
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Install dependencies
+        run:  cd frontend && npm ci
+
+      - name: Run eslint
+        run:  cd frontend && npx run lint
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: cd frontend && npm ci
+
+      - name: Run tests
+        run: cd frontend && CI=true npm test
+
+  build:
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Build docker image
+        run: |
+          REPOSITORY=456619976774.dkr.ecr.us-east-1.amazonaws.com
+          COMMIT_HASH=$(git log -1 --format=%H)
+          docker build -t $REPOSITORY/frontend:$COMMIT_HASH ./frontend
