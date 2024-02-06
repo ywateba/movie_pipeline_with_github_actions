@@ -1,0 +1,65 @@
+name: Python CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'backend/**'
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: Install pipenv
+      run: python -m pip install pipenv
+
+    - name: Install dependencies
+      run: pipenv install --dev
+
+    - name: Lint with flake8
+      run: |
+        pipenv run lint  backend/
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: Install pipenv
+      run: python -m pip install pipenv
+
+    - name: Install dependencies
+      run: pipenv install --dev
+
+    - name: Run tests
+      run: |
+        pipenv run test backend/
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: Build Docker image
+      run: |
+          COMMIT_HASH=$(git log -1 --format=%H)
+          docker build -t app/backend:COMMIT_HASH ./backend
