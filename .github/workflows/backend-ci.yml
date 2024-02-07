@@ -41,8 +41,7 @@ jobs:
       run: cd backend && pipenv install --dev
 
     - name: Lint with flake8
-      run: |
-        cd backend && pipenv run lint
+      run: cd backend && pipenv run lint
 
   test:
     runs-on: ubuntu-latest
@@ -70,8 +69,7 @@ jobs:
       run: cd backend && pipenv install --dev
 
     - name: Run tests
-      run: |
-        cd backend && pipenv run test
+      run: cd backend && pipenv run test
 
   build:
     needs: [lint, test]
@@ -89,6 +87,7 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
+        role-to-assume: arn:aws:iam::470769016866:role/EcrAccessRole
 
     - name: Login to Amazon ECR
       id: login-ecr
