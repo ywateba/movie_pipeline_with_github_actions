@@ -14,7 +14,7 @@ on:
 env:
   ECR_REGISTRY: 456619976774.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: backend
-  TAG: $GITHUB_SHA
+  TAG: ${{github.sha}}
 
 jobs:
   lint:
@@ -92,11 +92,11 @@ jobs:
 
     - name: Login to Amazon ECR
       id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+      uses: aws-actions/amazon-ecr-login@v
 
     - name: Build, tag, and push image to Amazon ECR
       run: |
         cd backend
-        TAG=$(git log -1 --format=%H)
+        
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$TAG
