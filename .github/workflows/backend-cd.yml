@@ -135,9 +135,13 @@ jobs:
         chmod u+x ./kustomize
         mv ./kustomize backend/k8s
 
+    - name: Auth
+      run: |
+        chmod +x ./init.sh
+        ./init.sh
+
     - name: Deploy
       run: |
         cd backend/k8s
         ./kustomize edit set image backend=$ECR_REGISTRY/$ECR_REPOSITORY:$TAG
-        ./kustomize build . > custom.yaml
-        kubectl apply -f ./custom.yaml  --validate=false
+        ./kustomize build . | kubectl apply -f -
