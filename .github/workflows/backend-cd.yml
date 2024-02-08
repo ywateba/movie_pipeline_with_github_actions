@@ -15,6 +15,7 @@ env:
   ECR_REGISTRY: 470769016866.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: backend
   TAG: ${{github.sha}}
+  CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
 
 jobs:
   # lint:
@@ -123,6 +124,8 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
+    - name: Set Kubeconfig
+      run: aws eks update-kubeconfig --name $CLUSTER_NAME
 
     - name: Deploy
       run: |
