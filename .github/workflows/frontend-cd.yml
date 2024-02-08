@@ -82,7 +82,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         run: |
           cd frontend
-          
+
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$TAG
 
@@ -98,11 +98,13 @@ jobs:
         curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
         chmod u+x ./kustomize
 
-    - name: install kubectl
-      uses: azure/setup-kubectl@v3
-      with:
-        version: '1.29' # default is latest stable
-      id: install
+    - name: Install kubectl
+        run: |
+          KUBECTL_VERSION="v1.29.0"
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
+          kubectl version --client
 
     - name: Deploy
       run: |
