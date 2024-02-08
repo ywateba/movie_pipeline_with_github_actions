@@ -12,9 +12,9 @@ on:
   workflow_dispatch:
 
 env:
-  ECR_REGISTRY: 456619976774.dkr.ecr.us-east-1.amazonaws.com
+  ECR_REGISTRY: 470769016866.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: backend
-  TAG: $GITHUB_SHA
+  TAG: ${{github.sha}}
 
 jobs:
   lint:
@@ -41,8 +41,7 @@ jobs:
       run: cd backend && pipenv install --dev
 
     - name: Lint with flake8
-      run: |
-        cd backend && pipenv run lint
+      run: cd backend && pipenv run lint
 
   test:
     runs-on: ubuntu-latest
@@ -81,7 +80,7 @@ jobs:
         python-version: '3.10'
 
     - name: Get AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -89,12 +88,12 @@ jobs:
 
     - name: Login to Amazon ECR
       id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+      uses: aws-actions/amazon-ecr-login@2
 
     - name: Build, tag, and push image to Amazon ECR
       run: |
         cd backend
-        TAG=$(git log -1 --format=%H)
+
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$TAG
 
@@ -109,11 +108,17 @@ jobs:
         curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
         chmod u+x ./kustomize
 
+    - name: install kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: '1.29' # default is latest stable
+      id: install
+      
     - name: Deploy
       run: |
         chmod u+x ./init.sh
         ./init.sh
         cd backend/k8s
-        TAG=$(git log -1 --format=%H)
+
         ./kustomize edit set image frontend=$ECR_REGISTRY/$ECR_REPOSITORY:$TAG
         ./kustomize build . | kubectl apply -f -
