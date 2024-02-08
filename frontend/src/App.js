@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MovieList from './components/MovieList';
 import MovieDetails from './components/MovieDetails';
 import './App.css';
@@ -28,8 +28,6 @@ export default function App() {
     setSelectedMovie(movie);
   };
 
-
-
   const getMovies = async () => {
     try {
       // Start loading
@@ -44,7 +42,7 @@ export default function App() {
     } catch (error) {
       // Catch any errors and set an error state
       setError(error.message);
-      setMovies(default_movies)
+      setMovies(default_movies);
     } finally {
       // End loading whether there was an error or not
       setLoading(false);
@@ -52,10 +50,8 @@ export default function App() {
   };
 
   useEffect(() => {
-
     getMovies();
   }, []);
-
 
   if (loading) {
     return <div>Loading...</div>;
