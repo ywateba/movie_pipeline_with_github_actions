@@ -122,7 +122,7 @@ jobs:
     - name: Set Kubeconfig
       run: |
         aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name $CLUSTER_NAME
-        
+
 
     - name: verify Kubeconfig
       run: |
@@ -139,4 +139,4 @@ jobs:
       run: |
         cd backend/k8s
         ./kustomize edit set image backend=$ECR_REGISTRY/$ECR_REPOSITORY:$TAG
-        ./kustomize build . | kubectl apply -f -
+        ./kustomize build . 
