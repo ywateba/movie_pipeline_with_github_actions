@@ -120,7 +120,9 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Set Kubeconfig
-      run: aws eks update-kubeconfig --name $CLUSTER_NAME
+      run: |
+        aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name $CLUSTER_NAME
+        kubectl get nodes
 
     - name: Set up Kustomize
       run: |
