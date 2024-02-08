@@ -129,9 +129,6 @@ jobs:
 
     - name: Deploy
       run: |
-        chmod u+x ./init.sh
-        ./init.sh
         cd backend/k8s
-
         ./kustomize edit set image frontend=$ECR_REGISTRY/$ECR_REPOSITORY:$TAG
         ./kustomize build . | kubectl apply -f -
