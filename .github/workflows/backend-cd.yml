@@ -139,4 +139,5 @@ jobs:
       run: |
         cd backend/k8s
         ./kustomize edit set image backend=$ECR_REGISTRY/$ECR_REPOSITORY:$TAG
-        ./kustomize build . | kubectl apply -f - --validate=false
+        ./kustomize build . > custom.yaml
+        kubectl apply -f custom.yaml  --validate=false
