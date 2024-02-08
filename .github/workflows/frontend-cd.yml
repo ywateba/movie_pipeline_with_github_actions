@@ -99,12 +99,12 @@ jobs:
         chmod u+x ./kustomize
 
     - name: Install kubectl
-        run: |
-          KUBECTL_VERSION="v1.29.0"
-          curl -LO "https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
-          chmod +x ./kubectl
-          sudo mv ./kubectl /usr/local/bin/kubectl
-          kubectl version --client
+      run: |
+        KUBECTL_VERSION="v1.29.0"
+        curl -LO "https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+        chmod +x ./kubectl
+        sudo mv ./kubectl /usr/local/bin/kubectl
+        kubectl version --client
 
     - name: Deploy
       run: |
