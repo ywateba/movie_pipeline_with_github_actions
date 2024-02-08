@@ -12,8 +12,9 @@ on:
   workflow_dispatch:
 
 env:
-  ECR_REGISTRY: 456619976774.dkr.ecr.us-east-1.amazonaws.com
+  ECR_REGISTRY: 470769016866.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: frontend
+  TAG: ${{github.sha}}
 
 
 jobs:
@@ -70,7 +71,7 @@ jobs:
           node-version: ' 18.x'
 
       - name: Get AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -78,11 +79,10 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, tag, and push image to Amazon ECR
         run: |
           cd frontend
-          TAG=$(git log -1 --format=%H)
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$TAG
