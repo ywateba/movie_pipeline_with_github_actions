@@ -82,7 +82,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         run: |
           cd frontend
-          TAG=$(git log -1 --format=%H)
+          
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$TAG
 
@@ -103,12 +103,12 @@ jobs:
       with:
         version: '1.29' # default is latest stable
       id: install
-      
+
     - name: Deploy
       run: |
         chmod u+x ./init.sh
         ./init.sh
         cd backend/k8s
-        TAG=$(git log -1 --format=%H)
+
         ./kustomize edit set image backend=$ECR_REGISTRY/$ECR_REPOSITORY:$TAG
         ./kustomize build . | kubectl apply -f -

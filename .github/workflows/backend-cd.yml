@@ -88,7 +88,7 @@ jobs:
 
     - name: Login to Amazon ECR
       id: login-ecr
-      uses: aws-actions/amazon-ecr-login@2
+      uses: aws-actions/amazon-ecr-login@v2
 
     - name: Build, tag, and push image to Amazon ECR
       run: |
@@ -108,12 +108,12 @@ jobs:
         curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
         chmod u+x ./kustomize
 
-    - name: install kubectl
+    - name: Install kubectl
       uses: azure/setup-kubectl@v3
       with:
         version: '1.29' # default is latest stable
       id: install
-      
+
     - name: Deploy
       run: |
         chmod u+x ./init.sh
