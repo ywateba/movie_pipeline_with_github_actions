@@ -19,3 +19,9 @@ spec:
           image: frontend
           ports:
             - containerPort: 3000
+        env:
+        - name: REACT_APP_MOVIE_API_URL
+          valueFrom:
+            configMapKeyRef:
+              name: db-env
+              key: API_HOST
