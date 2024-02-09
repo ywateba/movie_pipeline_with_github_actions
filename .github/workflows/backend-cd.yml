@@ -135,11 +135,7 @@ jobs:
         chmod u+x ./kustomize
         mv ./kustomize backend/k8s
 
-    - name: Auth
-      run: |
-        chmod +x ./init.sh
-        ./init.sh
-
+    
     - name: Deploy
       run: |
         cd backend/k8s
