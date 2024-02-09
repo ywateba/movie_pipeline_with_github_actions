@@ -15,6 +15,7 @@ env:
   ECR_REGISTRY: 470769016866.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: frontend
   TAG: ${{github.sha}}
+  CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
 
 jobs:
   lint:
@@ -83,7 +84,7 @@ jobs:
         run: |
           cd frontend
 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$TAG .
+          docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 -t $ECR_REGISTRY/$ECR_REPOSITORY:$TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$TAG
 
   deploy:
@@ -108,8 +109,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Set Kubeconfig
-        run: |
-          aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name $CLUSTER_NAME
+        run: aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name $CLUSTER_NAME
 
       - name: Set up Kustomize
         run: |
