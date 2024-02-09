@@ -1,9 +1,11 @@
 provider "aws" {
   region = "us-east-1"
+  shared_credentials_files = ["~/.aws/credentials"]
+  profile = "perso"
 }
 
 terraform {
-  required_version = "1.3.9"
+  required_version = "1.6.6"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
