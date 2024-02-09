@@ -1,10 +1,13 @@
 # Movie Pipeline with github actions
 
 This project showcases a pipeline with github actions for two applications :
+
     1. A frontend UI built written in Typescript, using the React framework
+
     2. A backend API written in Python using the Flask framework.
 
 For each application you have 2 pipelines which performs 4 possibles steps:
+
     - lint
     - test
     - build of docker image and push on ECR
