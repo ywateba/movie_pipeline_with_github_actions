@@ -18,60 +18,60 @@ env:
   CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
 
 jobs:
-  # lint:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: Set up Python
-  #     uses: actions/setup-python@v2
-  #     with:
-  #       python-version: '3.10'
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
 
-  #   - name: Cache pip packages
-  #     uses: actions/cache@v2
-  #     with:
-  #       path: ~/.cache/pip
-  #       key: ${{ runner.os }}-pip-${{ hashFiles('**/backend/Pipfile') }}
-  #       restore-keys: |
-  #         ${{ runner.os }}-pip-
+    - name: Cache pip packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/backend/Pipfile') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
-  #   - name: Install pipenv
-  #     run: python -m pip install pipenv
+    - name: Install pipenv
+      run: python -m pip install pipenv
 
-  #   - name: Install dependencies
-  #     run: cd backend && pipenv install --dev
+    - name: Install dependencies
+      run: cd backend && pipenv install --dev
 
-  #   - name: Lint with flake8
-  #     run: cd backend && pipenv run lint
+    - name: Lint with flake8
+      run: cd backend && pipenv run lint
 
-  # test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: Set up Python
-  #     uses: actions/setup-python@v2
-  #     with:
-  #       python-version: '3.10'
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
 
-  #   - name: Cache pip packages
-  #     uses: actions/cache@v2
-  #     with:
-  #       path: ~/.cache/pip
-  #       key: ${{ runner.os }}-pip-${{ hashFiles('**/backend/Pipfile') }}
-  #       restore-keys: |
-  #         ${{ runner.os }}-pip-
+    - name: Cache pip packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/backend/Pipfile') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
-  #   - name: Install pipenv
-  #     run: python -m pip install pipenv
+    - name: Install pipenv
+      run: python -m pip install pipenv
 
-  #   - name: Install dependencies
-  #     run: cd backend && pipenv install --dev
+    - name: Install dependencies
+      run: cd backend && pipenv install --dev
 
-  #   - name: Run tests
-  #     run: cd backend && pipenv run test
+    - name: Run tests
+      run: cd backend && pipenv run test
 
   build:
-    #needs: [lint, test]
+    needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -124,18 +124,13 @@ jobs:
         aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name $CLUSTER_NAME
 
 
-    - name: verify Kubeconfig
-      run: |
-        cat ~/.kube/config
-
-
     - name: Set up Kustomize
       run: |
         curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
         chmod u+x ./kustomize
         mv ./kustomize backend/k8s
 
-    
+
     - name: Deploy
       run: |
         cd backend/k8s

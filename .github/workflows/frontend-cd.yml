@@ -90,34 +90,35 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
+      - name: Install kubectl
+        run: |
+          KUBECTL_VERSION="v1.29.0"
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
+          kubectl version --client
 
-    - name: Set up Kustomize
-      run: |
-        curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
-        chmod u+x ./kustomize
+      - name: Get AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Install kubectl
-      run: |
-        KUBECTL_VERSION="v1.29.0"
-        curl -LO "https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
-        chmod +x ./kubectl
-        sudo mv ./kubectl /usr/local/bin/kubectl
-        kubectl version --client
+      - name: Set Kubeconfig
+        run: |
+          aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name $CLUSTER_NAME
 
-    - name: Get AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
+      - name: Set up Kustomize
+        run: |
+          curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+          chmod u+x ./kustomize
+          mv ./kustomize frontend/k8s
 
-    - name: Deploy
-      run: |
-        chmod u+x ./init.sh
-        ./init.sh
-        cd backend/k8s
-
-        ./kustomize edit set image backend=$ECR_REGISTRY/$ECR_REPOSITORY:$TAG
-        ./kustomize build . | kubectl apply -f -
+      - name: Deploy
+        run: |
+          cd frontend/k8s
+          ./kustomize edit set image frontend=$ECR_REGISTRY/$ECR_REPOSITORY:$TAG
+          ./kustomize build . | kubectl apply -f -
